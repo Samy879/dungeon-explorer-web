@@ -25,10 +25,12 @@
             100% { background-position: 0% 20%; }
         }
 
-        /* Sécurité supplémentaire : on s'assure que le HTML de base est noir */
-        html {
-            background-color: #050505;
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
+
+        html { background-color: #050505; }
 
         body {
             background-color: #050505;
@@ -43,19 +45,15 @@
             padding: 20px 4vw;
             display: flex;
             flex-direction: column;
-
-            /* CORRECTION 1 : 100vh au lieu de 98vh pour combler le trou en bas */
             height: 100vh;
             overflow: hidden;
             position: relative;
-
-            /* CORRECTION 2 : Force la création d'un calque pour ne pas cacher la lumière */
             z-index: 0;
         }
 
         body::after {
             content: ''; position: fixed; inset: 0; pointer-events: none;
-            z-index: -1; /* Reste bien derrière les fenêtres du jeu */
+            z-index: -1;
             background-image: radial-gradient(circle, rgba(0, 255, 65, 0.8) 0%, rgba(0, 255, 65, 0.2) 15%, transparent 35%);
             background-size: 200% 200%; animation: wanderingGlow 30s ease-in-out infinite;
             -webkit-mask-image: linear-gradient(black var(--grid-line), transparent var(--grid-line)), linear-gradient(90deg, black var(--grid-line), transparent var(--grid-line));
@@ -158,9 +156,39 @@
     <script>
         const mapB = document.getElementById('map-box'), roomB = document.getElementById('room-box'), playerB = document.getElementById('player-box'), inp = document.getElementById('input'), stdinBuffer = [];
         let curB = null; const knownCheats = new Set();
+        let lastCommand = ""; // Enregistre la commande système ou utilisateur
+
         function color(t) { return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\[\[R\]\]/g,"<span style='color:#ff4b4b;font-weight:bold'>").replace(/\[\[B\]\]/g,"<span style='color:#3b82f6;font-weight:bold'>").replace(/\[\[C\]\]/g,"<span style='color:#666'>").replace(/\[\[X\]\]/g,"</span>"); }
+
+        function triggerGameOver() {
+            const overlay = document.createElement('div');
+            overlay.style = `
+                position: fixed; inset: 0; background: #000; z-index: 10000;
+                display: flex; flex-direction: column; align-items: center; justify-content: center;
+                color: #ff4b4b; font-family: 'Courier New', monospace; font-weight: bold;
+                animation: fadeIn 0.8s ease-out;
+            `;
+            overlay.innerHTML = `
+                <div style="font-size: 5em; text-shadow: 0 0 30px rgba(255, 75, 75, 0.6);">GAME OVER</div>
+                <div style="font-size: 1.2em; color: #666; margin-top: 20px;">Redirection vers le menu...</div>
+            `;
+            document.body.appendChild(overlay);
+            setTimeout(() => { window.location.href = "index.html"; }, 3500);
+        }
+
         var Module = {
-            noInitialRun: true, arguments: [window.location.search.substring(1) || "donjon32.txt"],
+            noInitialRun: true,
+            arguments: [window.location.search.substring(1) || "donjon32.txt"],
+
+            // Se déclenche automatiquement quand le programme C s'arrête
+            onExit: function(status) {
+                if (lastCommand === "quit") {
+                    window.location.href = "index.html"; // Redirection brute si abandon voulu
+                } else {
+                    triggerGameOver(); // Vrai écran de défaite sinon
+                }
+            },
+
             print: function(t) {
                 if (t.includes("[[CLR]]")) { mapB.innerHTML = roomB.innerHTML = playerB.innerHTML = ""; curB = null; return; }
                 if (t.includes("[[MAP]]")) { curB = mapB; return; }
@@ -171,6 +199,7 @@
             stdin: () => stdinBuffer.length > 0 ? stdinBuffer.shift() : null,
             onRuntimeInitialized: () => { if (Module.callMain) Module.callMain(Module.arguments); updateList(); }
         };
+
         function autoFitMap() {
             if (!mapB.textContent) return;
             const lines = mapB.textContent.trimEnd().split('\n'), rows = lines.length, cols = Math.max(...lines.map(l => l.length));
@@ -185,20 +214,24 @@
         let resizeTimer; const mapObserver = new MutationObserver(() => { clearTimeout(resizeTimer); resizeTimer = setTimeout(autoFitMap, 15); });
         mapObserver.observe(mapB, { childList: true, characterData: true, subtree: true });
         window.addEventListener('resize', autoFitMap);
+
         window.addEventListener('keydown', (e) => {
             if (document.activeElement !== inp || inp.value === "") {
                 const m = {"ArrowUp":"n","ArrowDown":"s","ArrowLeft":"w","ArrowRight":"e"};
-                if (m[e.key]) { e.preventDefault(); send(m[e.key]); }
+                if (m[e.key]) { e.preventDefault(); lastCommand = m[e.key]; send(m[e.key]); }
             }
         });
+
         inp.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 const v = inp.value.trim();
+                lastCommand = v.toLowerCase(); // Sauvegarde de l'entrée utilisateur
                 if (v.startsWith("cheat")) { const f = v.split(" ")[1]; if (f) { knownCheats.add(f); setTimeout(() => { dl(f); updateList(); }, 600); } }
                 else if (v.startsWith("save")) { const f = v.split(" ")[1]; if (f) { setTimeout(() => { dl(f); updateList(); }, 600); } }
                 send(v); inp.value = '';
             }
         });
+
         function send(c) { for (let i = 0; i < c.length; i++) stdinBuffer.push(c.charCodeAt(i)); stdinBuffer.push(10); }
 
         function handleFiles(files) {
@@ -215,12 +248,8 @@
         }
 
         const savesPanel = document.getElementById('savesPanel');
-        savesPanel.addEventListener('dragover', (e) => {
-            e.preventDefault(); savesPanel.classList.add('dragover');
-        });
-        savesPanel.addEventListener('dragleave', (e) => {
-            e.preventDefault(); savesPanel.classList.remove('dragover');
-        });
+        savesPanel.addEventListener('dragover', (e) => { e.preventDefault(); savesPanel.classList.add('dragover'); });
+        savesPanel.addEventListener('dragleave', (e) => { e.preventDefault(); savesPanel.classList.remove('dragover'); });
         savesPanel.addEventListener('drop', (e) => {
             e.preventDefault(); savesPanel.classList.remove('dragover');
             if (e.dataTransfer.files.length) { handleFiles(e.dataTransfer.files); }
