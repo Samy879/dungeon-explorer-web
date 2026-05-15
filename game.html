@@ -25,6 +25,11 @@
             100% { background-position: 0% 20%; }
         }
 
+        /* Sécurité supplémentaire : on s'assure que le HTML de base est noir */
+        html {
+            background-color: #050505;
+        }
+
         body {
             background-color: #050505;
             background-image:
@@ -38,13 +43,19 @@
             padding: 20px 4vw;
             display: flex;
             flex-direction: column;
-            height: 98vh;
+
+            /* CORRECTION 1 : 100vh au lieu de 98vh pour combler le trou en bas */
+            height: 100vh;
             overflow: hidden;
             position: relative;
+
+            /* CORRECTION 2 : Force la création d'un calque pour ne pas cacher la lumière */
+            z-index: 0;
         }
 
         body::after {
-            content: ''; position: fixed; inset: 0; pointer-events: none; z-index: -1;
+            content: ''; position: fixed; inset: 0; pointer-events: none;
+            z-index: -1; /* Reste bien derrière les fenêtres du jeu */
             background-image: radial-gradient(circle, rgba(0, 255, 65, 0.8) 0%, rgba(0, 255, 65, 0.2) 15%, transparent 35%);
             background-size: 200% 200%; animation: wanderingGlow 30s ease-in-out infinite;
             -webkit-mask-image: linear-gradient(black var(--grid-line), transparent var(--grid-line)), linear-gradient(90deg, black var(--grid-line), transparent var(--grid-line));
@@ -89,7 +100,6 @@
             display: flex; flex-direction: column; min-height: 0; transition: all 0.2s;
         }
 
-        /* Effet visuel pendant le glisser-déposer */
         .saves-panel.dragover {
             border-color: #fff;
             background: rgba(0, 255, 65, 0.15);
@@ -191,10 +201,8 @@
         });
         function send(c) { for (let i = 0; i < c.length; i++) stdinBuffer.push(c.charCodeAt(i)); stdinBuffer.push(10); }
 
-        // Gestion des fichiers (Bouton ou Drag&Drop)
         function handleFiles(files) {
             if (!files.length) return;
-            // On boucle pour gérer si l'utilisateur glisse plusieurs fichiers d'un coup
             for (let i = 0; i < files.length; i++) {
                 const f = files[i];
                 const r = new FileReader();
@@ -206,24 +214,17 @@
             }
         }
 
-        // --- GESTION DU DRAG AND DROP ---
         const savesPanel = document.getElementById('savesPanel');
         savesPanel.addEventListener('dragover', (e) => {
-            e.preventDefault(); // Nécessaire pour autoriser le drop
-            savesPanel.classList.add('dragover');
+            e.preventDefault(); savesPanel.classList.add('dragover');
         });
         savesPanel.addEventListener('dragleave', (e) => {
-            e.preventDefault();
-            savesPanel.classList.remove('dragover');
+            e.preventDefault(); savesPanel.classList.remove('dragover');
         });
         savesPanel.addEventListener('drop', (e) => {
-            e.preventDefault();
-            savesPanel.classList.remove('dragover');
-            if (e.dataTransfer.files.length) {
-                handleFiles(e.dataTransfer.files);
-            }
+            e.preventDefault(); savesPanel.classList.remove('dragover');
+            if (e.dataTransfer.files.length) { handleFiles(e.dataTransfer.files); }
         });
-        // ---------------------------------
 
         function updateList() {
             const lSaves = document.getElementById('fileList'), lCheats = document.getElementById('cheatList');

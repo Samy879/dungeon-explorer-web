@@ -20,6 +20,11 @@
             100% { background-position: 0% 20%; }
         }
 
+        /* CORRECTION : On s'assure que le document de base est noir */
+        html {
+            background-color: #050505;
+        }
+
         body {
             background-color: #050505;
             background-image:
@@ -27,6 +32,7 @@
                 linear-gradient(90deg, var(--grid-base-color) var(--grid-line), transparent var(--grid-line));
             background-size: var(--grid-size);
             background-attachment: fixed;
+
             color: #ccc;
             font-family: 'Courier New', monospace;
             margin: 0;
@@ -37,6 +43,9 @@
             height: 100vh;
             overflow: hidden;
             position: relative;
+
+            /* CORRECTION : On force la création d'un calque de base */
+            z-index: 0;
         }
 
         body::after {
@@ -44,13 +53,26 @@
             position: fixed;
             inset: 0;
             pointer-events: none;
+
+            /* L'animation reste bien coincée entre le fond et le menu */
             z-index: -1;
-            background-image: radial-gradient(circle, rgba(0, 255, 65, 0.8) 0%, rgba(0, 255, 65, 0.2) 15%, transparent 35%);
+
+            background-image: radial-gradient(
+                circle,
+                rgba(0, 255, 65, 0.8) 0%,
+                rgba(0, 255, 65, 0.2) 15%,
+                transparent 35%
+            );
             background-size: 200% 200%;
             animation: wanderingGlow 30s ease-in-out infinite;
-            -webkit-mask-image: linear-gradient(black var(--grid-line), transparent var(--grid-line)), linear-gradient(90deg, black var(--grid-line), transparent var(--grid-line));
+
+            -webkit-mask-image:
+                linear-gradient(black var(--grid-line), transparent var(--grid-line)),
+                linear-gradient(90deg, black var(--grid-line), transparent var(--grid-line));
             -webkit-mask-size: var(--grid-size);
-            mask-image: linear-gradient(black var(--grid-line), transparent var(--grid-line)), linear-gradient(90deg, black var(--grid-line), transparent var(--grid-line));
+            mask-image:
+                linear-gradient(black var(--grid-line), transparent var(--grid-line)),
+                linear-gradient(90deg, black var(--grid-line), transparent var(--grid-line));
             mask-size: var(--grid-size);
         }
 
@@ -60,7 +82,7 @@
             border-radius: 12px;
             padding: 40px;
             width: 100%;
-            max-width: 550px; /* Légèrement élargi pour la nouvelle disposition */
+            max-width: 550px;
             box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
             text-align: center;
             position: relative;
@@ -83,11 +105,10 @@
 
         p.subtitle { color: #aaa; margin-bottom: 30px; font-size: 1.1em; text-transform: uppercase; }
 
-        /* NOUVELLE DISPOSITION DES BOUTONS */
         .level-btn {
             display: flex;
-            justify-content: space-between; /* Écarte le titre et la taille */
-            align-items: center; /* Centre verticalement */
+            justify-content: space-between;
+            align-items: center;
             width: 100%;
             background: #111;
             color: #ccc;
@@ -112,7 +133,7 @@
         }
         .level-btn:hover .lvl-size { color: #00ff41; }
 
-        .level-btn.epic { border-color: #ff4b4b; color: #ff4b4b; justify-content: center; /* Le boss est centré ! */ }
+        .level-btn.epic { border-color: #ff4b4b; color: #ff4b4b; justify-content: center; }
         .level-btn.epic:hover {
             border-color: #ff4b4b; background: rgba(255, 75, 75, 0.05);
             box-shadow: 0 0 15px rgba(255, 75, 75, 0.3);
@@ -145,7 +166,7 @@
     </div>
 
     <div class="credits">
-        <strong>Samy ALLIA - L1 Informatique</strong><br>
+        <strong>Samy ALLIA - L2 Informatique</strong><br>
         Code du jeu créé par Samy ALLIA<br>
         Jeu exporté en version Web par une IA
     </div>
