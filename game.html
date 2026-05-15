@@ -182,8 +182,9 @@
 
             // Se déclenche automatiquement quand le programme C s'arrête
             onExit: function(status) {
-                if (lastCommand === "quit") {
-                    window.location.href = "index.html"; // Redirection brute si abandon voulu
+                // CORRECTION : Prend en compte "quit" OU "q" pour la redirection directe
+                if (lastCommand === "quit" || lastCommand === "q") {
+                    window.location.href = "index.html";
                 } else {
                     triggerGameOver(); // Vrai écran de défaite sinon
                 }
