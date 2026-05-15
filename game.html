@@ -156,7 +156,7 @@
     <script>
         const mapB = document.getElementById('map-box'), roomB = document.getElementById('room-box'), playerB = document.getElementById('player-box'), inp = document.getElementById('input'), stdinBuffer = [];
         let curB = null; const knownCheats = new Set();
-        let lastCommand = ""; // Enregistre la commande système ou utilisateur
+        let lastCommand = "";
 
         function color(t) { return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\[\[R\]\]/g,"<span style='color:#ff4b4b;font-weight:bold'>").replace(/\[\[B\]\]/g,"<span style='color:#3b82f6;font-weight:bold'>").replace(/\[\[C\]\]/g,"<span style='color:#666'>").replace(/\[\[X\]\]/g,"</span>"); }
 
@@ -173,20 +173,19 @@
                 <div style="font-size: 1.2em; color: #666; margin-top: 20px;">Redirection vers le menu...</div>
             `;
             document.body.appendChild(overlay);
-            setTimeout(() => { window.location.href = "index.html"; }, 3500);
+            // REDUCTION TERMINEE : 2 secondes pile (2000ms) pour une transition fluide
+            setTimeout(() => { window.location.href = "index.html"; }, 2000);
         }
 
         var Module = {
             noInitialRun: true,
             arguments: [window.location.search.substring(1) || "donjon32.txt"],
 
-            // Se déclenche automatiquement quand le programme C s'arrête
             onExit: function(status) {
-                // CORRECTION : Prend en compte "quit" OU "q" pour la redirection directe
                 if (lastCommand === "quit" || lastCommand === "q") {
                     window.location.href = "index.html";
                 } else {
-                    triggerGameOver(); // Vrai écran de défaite sinon
+                    triggerGameOver();
                 }
             },
 
@@ -226,7 +225,7 @@
         inp.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 const v = inp.value.trim();
-                lastCommand = v.toLowerCase(); // Sauvegarde de l'entrée utilisateur
+                lastCommand = v.toLowerCase();
                 if (v.startsWith("cheat")) { const f = v.split(" ")[1]; if (f) { knownCheats.add(f); setTimeout(() => { dl(f); updateList(); }, 600); } }
                 else if (v.startsWith("save")) { const f = v.split(" ")[1]; if (f) { setTimeout(() => { dl(f); updateList(); }, 600); } }
                 send(v); inp.value = '';
