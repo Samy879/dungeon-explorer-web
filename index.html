@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <title>Dungeon Explorer - Menu Principal</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        :root {
+            --grid-size: 40px 40px;
+            --grid-line: 1px;
+            --grid-base-color: rgba(0, 255, 65, 0.05);
+        }
+
+        @keyframes wanderingGlow {
+            0%   { background-position: 0% 20%; }
+            25%  { background-position: 100% 50%; }
+            50%  { background-position: 80% 100%; }
+            75%  { background-position: 20% 80%; }
+            100% { background-position: 0% 20%; }
+        }
+
+        body {
+            background-color: #050505;
+            background-image:
+                linear-gradient(var(--grid-base-color) var(--grid-line), transparent var(--grid-line)),
+                linear-gradient(90deg, var(--grid-base-color) var(--grid-line), transparent var(--grid-line));
+            background-size: var(--grid-size);
+            background-attachment: fixed;
+            color: #ccc;
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -1;
+            background-image: radial-gradient(circle, rgba(0, 255, 65, 0.8) 0%, rgba(0, 255, 65, 0.2) 15%, transparent 35%);
+            background-size: 200% 200%;
+            animation: wanderingGlow 30s ease-in-out infinite;
+            -webkit-mask-image: linear-gradient(black var(--grid-line), transparent var(--grid-line)), linear-gradient(90deg, black var(--grid-line), transparent var(--grid-line));
+            -webkit-mask-size: var(--grid-size);
+            mask-image: linear-gradient(black var(--grid-line), transparent var(--grid-line)), linear-gradient(90deg, black var(--grid-line), transparent var(--grid-line));
+            mask-size: var(--grid-size);
+        }
+
+        .menu-container {
+            background: rgba(5, 5, 5, 0.95);
+            border: 2px solid #333;
+            border-radius: 12px;
+            padding: 40px;
+            width: 100%;
+            max-width: 550px; /* Légèrement élargi pour la nouvelle disposition */
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+            text-align: center;
+            position: relative;
+        }
+
+        .menu-container::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(45deg, #00ff41, transparent, transparent, #00ff41);
+            z-index: -1;
+            border-radius: 14px;
+            opacity: 0.2;
+        }
+
+        h1 {
+            color: #00ff41; margin: 0 0 10px 0; font-size: 2.5em;
+            text-shadow: 0 0 20px rgba(0, 255, 65, 0.5); letter-spacing: 2px;
+        }
+
+        p.subtitle { color: #aaa; margin-bottom: 30px; font-size: 1.1em; text-transform: uppercase; }
+
+        /* NOUVELLE DISPOSITION DES BOUTONS */
+        .level-btn {
+            display: flex;
+            justify-content: space-between; /* Écarte le titre et la taille */
+            align-items: center; /* Centre verticalement */
+            width: 100%;
+            background: #111;
+            color: #ccc;
+            border: 2px solid #444;
+            border-radius: 6px;
+            padding: 16px 25px;
+            margin-bottom: 15px;
+            font-family: inherit;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+        }
+
+        .lvl-name { text-align: left; }
+        .lvl-size { font-size: 0.85em; color: #666; font-weight: normal; }
+
+        .level-btn:hover {
+            border-color: #00ff41; color: #00ff41; background: rgba(0, 255, 65, 0.05);
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.3); transform: translateY(-2px);
+        }
+        .level-btn:hover .lvl-size { color: #00ff41; }
+
+        .level-btn.epic { border-color: #ff4b4b; color: #ff4b4b; justify-content: center; /* Le boss est centré ! */ }
+        .level-btn.epic:hover {
+            border-color: #ff4b4b; background: rgba(255, 75, 75, 0.05);
+            box-shadow: 0 0 15px rgba(255, 75, 75, 0.3);
+        }
+
+        .credits { margin-top: 40px; text-align: center; font-size: 0.9em; color: #666; line-height: 1.6; }
+        .credits strong { color: #00ff41; }
+    </style>
+</head>
+<body>
+    <div class="menu-container">
+        <h1>DUNGEON EXPLORER</h1>
+        <p class="subtitle">Sélectionnez une mission</p>
+
+        <button class="level-btn" onclick="window.location.href='game.html?donjon16.txt'">
+            <span class="lvl-name">Niveau 1 : Infiltration</span>
+            <span class="lvl-size">[16x16]</span>
+        </button>
+        <button class="level-btn" onclick="window.location.href='game.html?donjon32.txt'">
+            <span class="lvl-name">Niveau 2 : Exploration</span>
+            <span class="lvl-size">[32x32]</span>
+        </button>
+        <button class="level-btn" onclick="window.location.href='game.html?donjon64.txt'">
+            <span class="lvl-name">Niveau 3 : Labyrinthe</span>
+            <span class="lvl-size">[64x64]</span>
+        </button>
+        <button class="level-btn epic" onclick="window.location.href='game.html?donjon_epic.txt'">
+            ⚡ Mission Épique : Le Seigneur Noir
+        </button>
+    </div>
+
+    <div class="credits">
+        <strong>Samy ALLIA - L1 Informatique</strong><br>
+        Code du jeu créé par Samy ALLIA<br>
+        Jeu exporté en version Web par une IA
+    </div>
+</body>
+</html>
