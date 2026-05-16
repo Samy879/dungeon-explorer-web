@@ -20,7 +20,6 @@
             100% { background-position: 0% 20%; }
         }
 
-        /* CORRECTION : On s'assure que le document de base est noir */
         html {
             background-color: #050505;
         }
@@ -43,8 +42,6 @@
             height: 100vh;
             overflow: hidden;
             position: relative;
-
-            /* CORRECTION : On force la création d'un calque de base */
             z-index: 0;
         }
 
@@ -53,8 +50,6 @@
             position: fixed;
             inset: 0;
             pointer-events: none;
-
-            /* L'animation reste bien coincée entre le fond et le menu */
             z-index: -1;
 
             background-image: radial-gradient(
@@ -76,71 +71,89 @@
             mask-size: var(--grid-size);
         }
 
+        /* AMÉLIORATION DE LA BOX : Glassmorphism et bordures fines */
         .menu-container {
-            background: rgba(5, 5, 5, 0.95);
-            border: 2px solid #333;
-            border-radius: 12px;
-            padding: 40px;
+            background: rgba(10, 10, 10, 0.7); /* Plus transparent */
+            backdrop-filter: blur(8px); /* Effet verre flouté */
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(0, 255, 65, 0.2);
+            border-top: 3px solid #00ff41; /* Ligne de force en haut */
+            border-radius: 8px;
+            padding: 40px 50px;
             width: 100%;
             max-width: 550px;
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 255, 65, 0.05);
             text-align: center;
             position: relative;
         }
 
-        .menu-container::before {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            background: linear-gradient(45deg, #00ff41, transparent, transparent, #00ff41);
-            z-index: -1;
-            border-radius: 14px;
-            opacity: 0.2;
-        }
-
         h1 {
-            color: #00ff41; margin: 0 0 10px 0; font-size: 2.5em;
-            text-shadow: 0 0 20px rgba(0, 255, 65, 0.5); letter-spacing: 2px;
+            color: #00ff41; margin: 0 0 10px 0; font-size: 2.4em;
+            text-shadow: 0 0 15px rgba(0, 255, 65, 0.4); letter-spacing: 2px;
         }
 
-        p.subtitle { color: #aaa; margin-bottom: 30px; font-size: 1.1em; text-transform: uppercase; }
+        p.subtitle { color: #888; margin-bottom: 35px; font-size: 1em; text-transform: uppercase; letter-spacing: 3px; }
 
+        /* BOUTONS : Style terminal modernisé */
         .level-btn {
             display: flex;
             justify-content: space-between;
             align-items: center;
             width: 100%;
-            background: #111;
+            background: rgba(0, 0, 0, 0.6);
             color: #ccc;
-            border: 2px solid #444;
-            border-radius: 6px;
-            padding: 16px 25px;
-            margin-bottom: 15px;
+            border: 1px solid #333;
+            border-left: 4px solid #444; /* Barre d'état inactive */
+            border-radius: 4px;
+            padding: 16px 20px;
+            margin-bottom: 12px;
             font-family: inherit;
-            font-size: 1.1em;
+            font-size: 1.05em;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             text-transform: uppercase;
         }
 
-        .lvl-name { text-align: left; }
-        .lvl-size { font-size: 0.85em; color: #666; font-weight: normal; }
+        .lvl-name { text-align: left; transition: color 0.2s; }
+        .lvl-size { font-size: 0.85em; color: #555; font-weight: normal; transition: color 0.2s; }
 
         .level-btn:hover {
-            border-color: #00ff41; color: #00ff41; background: rgba(0, 255, 65, 0.05);
-            box-shadow: 0 0 15px rgba(0, 255, 65, 0.3); transform: translateY(-2px);
+            background: rgba(0, 255, 65, 0.05);
+            border-color: rgba(0, 255, 65, 0.3);
+            border-left: 4px solid #00ff41; /* Barre d'état active */
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.15), inset 0 0 10px rgba(0, 255, 65, 0.05);
+            transform: translateX(4px); /* Léger décalage dynamique */
         }
+
+        .level-btn:hover .lvl-name { color: #fff; }
         .level-btn:hover .lvl-size { color: #00ff41; }
 
-        .level-btn.epic { border-color: #ff4b4b; color: #ff4b4b; justify-content: center; }
-        .level-btn.epic:hover {
-            border-color: #ff4b4b; background: rgba(255, 75, 75, 0.05);
-            box-shadow: 0 0 15px rgba(255, 75, 75, 0.3);
-        }
+        .level-btn:active { transform: translateX(2px); }
 
-        .credits { margin-top: 40px; text-align: center; font-size: 0.9em; color: #666; line-height: 1.6; }
-        .credits strong { color: #00ff41; }
+        .level-btn.epic {
+            border-left: 4px solid #882222;
+            justify-content: center;
+            margin-top: 25px; /* Sépare la mission épique du reste */
+        }
+        .level-btn.epic:hover {
+            background: rgba(255, 75, 75, 0.05);
+            border-color: rgba(255, 75, 75, 0.3);
+            border-left: 4px solid #ff4b4b;
+            box-shadow: 0 0 15px rgba(255, 75, 75, 0.15);
+        }
+        .level-btn.epic:hover .lvl-name { color: #ff4b4b; }
+
+        .credits {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 0.85em;
+            color: #555;
+            line-height: 1.8;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .credits strong { color: #00ff41; letter-spacing: 1px; }
     </style>
 </head>
 <body>
@@ -150,25 +163,26 @@
 
         <button class="level-btn" onclick="window.location.href='game.html?donjon16.txt'">
             <span class="lvl-name">Niveau 1 : Infiltration</span>
-            <span class="lvl-size">[16x16]</span>
+            <span class="lvl-size">[4x4]</span>
         </button>
         <button class="level-btn" onclick="window.location.href='game.html?donjon32.txt'">
             <span class="lvl-name">Niveau 2 : Exploration</span>
-            <span class="lvl-size">[32x32]</span>
+            <span class="lvl-size">[8x4]</span>
         </button>
         <button class="level-btn" onclick="window.location.href='game.html?donjon64.txt'">
             <span class="lvl-name">Niveau 3 : Labyrinthe</span>
-            <span class="lvl-size">[64x64]</span>
+            <span class="lvl-size">[8x8]</span>
         </button>
-        <button class="level-btn epic" onclick="window.location.href='game.html?donjon_epic.txt'">
-            ⚡ Mission Épique : Le Seigneur Noir
-        </button>
-    </div>
 
-    <div class="credits">
-        <strong>Samy ALLIA - L1 Informatique</strong><br>
-        Code du jeu créé par Samy ALLIA<br>
-        Jeu exporté en version Web par une IA
+        <button class="level-btn epic" onclick="window.location.href='game.html?donjon_epic.txt'">
+            <span class="lvl-name">⚡ Mission Épique : Le Seigneur Noir</span>
+        </button>
+
+        <div class="credits">
+            <strong>Samy ALLIA - L1 Informatique</strong><br>
+            Code du jeu créé par Samy ALLIA<br>
+            Jeu exporté en version Web avec l'aide d'IA générative
+        </div>
     </div>
 </body>
 </html>
