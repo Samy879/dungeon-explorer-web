@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="utf-8">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏰</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%2250%25%22 x=%2250%25%22 dominant-baseline=%22central%22 text-anchor=%22middle%22 font-size=%2275%22>🏰</text></svg>">
     <title>Dungeon Explorer - Menu Principal</title>
     <style>
         * { box-sizing: border-box; }
@@ -46,7 +46,6 @@
             z-index: 0;
         }
 
-        /* Fond de base (Vert) reculé au z-index -2 */
         body::after {
             content: '';
             position: fixed;
@@ -73,7 +72,6 @@
             mask-size: var(--grid-size);
         }
 
-        /* NOUVEAU : Calque Rouge pour le niveau Épique */
         .epic-overlay {
             position: fixed;
             inset: 0;
@@ -110,7 +108,6 @@
             mask-size: var(--grid-size);
         }
 
-        /* Déclencheur du fond rouge */
         body.epic-mode .epic-overlay {
             opacity: 1;
         }
@@ -129,9 +126,11 @@
             text-align: center;
             position: relative;
             transition: box-shadow 0.5s ease;
+
+            /* CORRECTION : Empêche la barre pseudo-élément de fuiter dans les coins arrondis */
+            overflow: hidden;
         }
 
-        /* NOUVEAU : Barre verte de base au dessus de la box */
         .menu-container::before {
             content: '';
             position: absolute;
@@ -142,7 +141,6 @@
             border-top-right-radius: 8px;
         }
 
-        /* NOUVEAU : Barre rouge animée depuis le centre */
         .menu-container::after {
             content: '';
             position: absolute;
@@ -156,7 +154,6 @@
             border-top-right-radius: 8px;
         }
 
-        /* Déclencheurs de la barre et de l'aura de la box */
         body.epic-mode .menu-container::after {
             width: 100%;
         }
@@ -171,7 +168,6 @@
             transition: color 0.5s, text-shadow 0.5s;
         }
 
-        /* Le titre passe au rouge ! */
         body.epic-mode h1 {
             color: #ff4b4b;
             text-shadow: 0 0 15px rgba(255, 75, 75, 0.4);
@@ -273,7 +269,6 @@
     </div>
 
     <script>
-        // Le petit script magique qui détecte le survol
         const epicBtn = document.getElementById('epicButton');
 
         epicBtn.addEventListener('mouseenter', () => {

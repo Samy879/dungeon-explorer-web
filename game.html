@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="utf-8">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏰</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%2250%25%22 x=%2250%25%22 dominant-baseline=%22central%22 text-anchor=%22middle%22 font-size=%2275%22>🏰</text></svg>">
     <title>Dungeon Explorer Web</title>
     <style>
         ::-webkit-scrollbar { width: 8px; }
@@ -52,7 +52,6 @@
             z-index: 0;
         }
 
-        /* Fond de base vert */
         body::after {
             content: ''; position: fixed; inset: 0; pointer-events: none;
             z-index: -2;
@@ -64,7 +63,6 @@
             mask-size: var(--grid-size);
         }
 
-        /* Calque Rouge Épique invisible par défaut */
         .epic-overlay {
             position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0;
             transition: opacity 1.5s ease-in-out; background-color: #050505;
@@ -98,24 +96,15 @@
         .game-grid { flex: 3; display: flex; flex-direction: column; gap: 25px; min-height: 0; }
         .top-panels { display: flex; gap: 25px; flex: 1; min-height: 0; }
 
-        /* =========================================
-           NOUVEAU DESIGN DES BOÎTES (ÉQUILIBRÉ)
-           ========================================= */
         .box, .side-panel, #input-area {
-            /* Bordure fine et symétrique partout */
             border: 1px solid rgba(0, 255, 65, 0.3);
             border-radius: 8px;
             background-color: rgba(5, 5, 5, 0.95);
-
-            /* Léger éclat interne vert pour le style "console" */
             box-shadow: 0 8px 20px rgba(0,0,0,0.6), inset 0 0 10px rgba(0, 255, 65, 0.05);
-
-            /* Préparation du laser (invisible par défaut) */
             background-image: linear-gradient(#ff4b4b, #ff4b4b);
             background-repeat: no-repeat;
             background-position: center top;
-            background-size: 0% 2px; /* Laser très fin (2px) */
-
+            background-size: 0% 2px;
             transition: background-size 1.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 1.2s, box-shadow 1.2s;
         }
 
@@ -126,7 +115,8 @@
         .info-stack { flex: 1; display: flex; flex-direction: column; gap: 25px; min-height: 0; }
         #room-box, #player-box { flex: 1; }
 
-        #input-area { padding: 15px 20px; align-items: center; }
+        /* CORRECTION 2 : cursor: text partout sur la boîte */
+        #input-area { padding: 15px 20px; align-items: center; cursor: text; }
         #input { background: none; border: none; color: #fff; font-family: inherit; font-size: 19px; outline: none; flex: 1; caret-color: #00ff41; transition: caret-color 1s; }
 
         .sidebar { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 280px; max-width: 350px; }
@@ -151,19 +141,11 @@
         button.add-btn { background: rgba(0, 255, 65, 0.1); color: #00ff41; border: 1px solid #00ff41; border-radius: 4px; padding: 12px; cursor: pointer; font-weight: bold; width: 100%; font-family: inherit; margin-bottom: 10px; transition: all 0.3s; }
         button.add-btn:hover { background: #00ff41; color: #000; }
 
-        /* =========================================
-           LE MODE EPIQUE : BORDURE UNIFORME + LASER
-           ========================================= */
         body.epic-mode .box,
         body.epic-mode .side-panel,
         body.epic-mode #input-area {
-            /* Le laser s'étend sur le bord haut */
             background-size: 100% 2px;
-
-            /* Toutes les bordures virent au rouge fluide */
             border-color: rgba(255, 75, 75, 0.5);
-
-            /* L'éclat interne passe du vert au rouge */
             box-shadow: 0 8px 20px rgba(0,0,0,0.8), inset 0 0 15px rgba(255, 75, 75, 0.15), 0 0 10px rgba(255, 75, 75, 0.2);
         }
 
@@ -182,7 +164,9 @@
     </style>
 </head>
 <body>
-    <div class="epic-overlay"></div> <a href="index.html" class="btn-menu">◀ Menu</a>
+    <div class="epic-overlay"></div>
+
+    <a href="index.html" class="btn-menu">◀ Menu</a>
     <h2>🏰 DUNGEON EXPLORER</h2>
     <div class="main-layout">
         <div class="game-grid">
@@ -193,7 +177,7 @@
                     <div id="player-box" class="box"></div>
                 </div>
             </div>
-            <div id="input-area"><span id="prompt" style="margin-right:15px; font-weight:bold;">></span><input type="text" id="input" placeholder="Entrez une commande..." autofocus autocomplete="off"></div>
+            <div id="input-area" onclick="document.getElementById('input').focus()"><span id="prompt" style="margin-right:15px; font-weight:bold;">></span><input type="text" id="input" placeholder="Entrez une commande..." autofocus autocomplete="off"></div>
         </div>
         <div class="sidebar">
             <div id="savesPanel" class="side-panel saves-panel">
@@ -221,7 +205,6 @@
         const knownCheats = new Set();
         let lastCommand = "";
 
-        // DÉTECTION DU MODE ÉPIQUE AU CHARGEMENT
         const currentLevel = window.location.search.substring(1);
         if (currentLevel.includes("epic")) {
             setTimeout(() => {
