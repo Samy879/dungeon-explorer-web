@@ -156,7 +156,11 @@
     </div>
     <script>
         const mapB = document.getElementById('map-box'), roomB = document.getElementById('room-box'), playerB = document.getElementById('player-box'), inp = document.getElementById('input'), stdinBuffer = [];
-        let curB = null; const knownCheats = new Set();
+
+        // Ajout de mapBuffer ici pour la gestion de la mémoire !
+        let curB = null;
+        let mapBuffer = "";
+        const knownCheats = new Set();
         let lastCommand = "";
 
         function color(t) { return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\[\[R\]\]/g,"<span style='color:#ff4b4b;font-weight:bold'>").replace(/\[\[B\]\]/g,"<span style='color:#3b82f6;font-weight:bold'>").replace(/\[\[C\]\]/g,"<span style='color:#666'>").replace(/\[\[X\]\]/g,"</span>"); }
@@ -174,7 +178,6 @@
                 <div style="font-size: 1.2em; color: #666; margin-top: 20px;">Redirection vers le menu...</div>
             `;
             document.body.appendChild(overlay);
-            // REDUCTION TERMINEE : 2 secondes pile (2000ms) pour une transition fluide
             setTimeout(() => { window.location.href = "index.html"; }, 2000);
         }
 
@@ -191,11 +194,26 @@
             },
 
             print: function(t) {
-                if (t.includes("[[CLR]]")) { mapB.innerHTML = roomB.innerHTML = playerB.innerHTML = ""; curB = null; return; }
-                if (t.includes("[[MAP]]")) { curB = mapB; return; }
-                if (t.includes("[[ROOM]]")) { curB = roomB; return; }
+                // OPTIMISATION : Utilisation du mapBuffer pour le grand donjon
+                if (t.includes("[[CLR]]")) {
+                    mapB.innerHTML = roomB.innerHTML = playerB.innerHTML = "";
+                    mapBuffer = "";
+                    curB = null;
+                    return;
+                }
+                if (t.includes("[[MAP]]")) { curB = mapB; mapBuffer = ""; return; }
+                if (t.includes("[[ROOM]]")) {
+                    if (mapBuffer) { mapB.innerHTML = color(mapBuffer); mapBuffer = ""; }
+                    curB = roomB;
+                    return;
+                }
                 if (t.includes("[[PLAYER]]")) { curB = playerB; return; }
-                if (curB) curB.innerHTML += color(t) + "\n";
+
+                if (curB === mapB) {
+                    mapBuffer += t + "\n";
+                } else if (curB) {
+                    curB.innerHTML += color(t) + "\n";
+                }
             },
             stdin: () => stdinBuffer.length > 0 ? stdinBuffer.shift() : null,
             onRuntimeInitialized: () => { if (Module.callMain) Module.callMain(Module.arguments); updateList(); }
