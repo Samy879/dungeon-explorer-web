@@ -1,0 +1,7 @@
+4 4
+.@..
+.#..
+.#..
+....
+DESC 1 0 La salle de depart.
+ITEM 0 3 tresor 1

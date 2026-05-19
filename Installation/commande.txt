@@ -1,0 +1,11 @@
+emcc main.c jeu.c donjon.c salle.c joueur.c inventaire.c ui.c ennemi.c save.c explore.c \
+    -o game.html \
+    -sASYNCIFY \
+    -sEXIT_RUNTIME=1 \
+    --preload-file donjon16.txt \
+    --preload-file donjon32.txt \
+    --preload-file donjon64.txt \
+    --preload-file donjon_remy.txt \
+    --preload-file donjon_epic.txt \
+    --shell-file shell.html \
+    -sEXPORTED_RUNTIME_METHODS=callMain,FS

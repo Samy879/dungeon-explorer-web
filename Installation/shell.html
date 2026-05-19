@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%2250%25%22 x=%2250%25%22 dominant-baseline=%22central%22 text-anchor=%22middle%22 font-size=%2275%22>🏰</text></svg>">
+    <title>Dungeon Explorer Web</title>
+    <style>
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #111; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #00ff41; }
+
+        * { box-sizing: border-box; }
+
+        :root {
+            --grid-size: 40px 40px;
+            --grid-line: 1px;
+            --grid-base-color: rgba(0, 255, 65, 0.05);
+        }
+
+        @keyframes wanderingGlow {
+            0%   { background-position: 0% 20%; }
+            25%  { background-position: 100% 50%; }
+            50%  { background-position: 80% 100%; }
+            75%  { background-position: 20% 80%; }
+            100% { background-position: 0% 20%; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        html { background-color: #050505; }
+
+        body {
+            background-color: #050505;
+            background-image:
+                linear-gradient(var(--grid-base-color) var(--grid-line), transparent var(--grid-line)),
+                linear-gradient(90deg, var(--grid-base-color) var(--grid-line), transparent var(--grid-line));
+            background-size: var(--grid-size);
+            background-attachment: fixed;
+            color: #ccc;
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 20px 4vw;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+            z-index: 0;
+        }
+
+        body::after {
+            content: ''; position: fixed; inset: 0; pointer-events: none;
+            z-index: -2;
+            background-image: radial-gradient(circle, rgba(0, 255, 65, 0.8) 0%, rgba(0, 255, 65, 0.2) 15%, transparent 35%);
+            background-size: 200% 200%; animation: wanderingGlow 30s ease-in-out infinite;
+            -webkit-mask-image: linear-gradient(black var(--grid-line), transparent var(--grid-line)), linear-gradient(90deg, black var(--grid-line), transparent var(--grid-line));
+            -webkit-mask-size: var(--grid-size);
+            mask-image: linear-gradient(black var(--grid-line), transparent var(--grid-line)), linear-gradient(90deg, black var(--grid-line), transparent var(--grid-line));
+            mask-size: var(--grid-size);
+        }
+
+        .epic-overlay {
+            position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0;
+            transition: opacity 1.5s ease-in-out; background-color: #050505;
+            background-image: linear-gradient(rgba(255, 75, 75, 0.08) var(--grid-line), transparent var(--grid-line)), linear-gradient(90deg, rgba(255, 75, 75, 0.08) var(--grid-line), transparent var(--grid-line));
+            background-size: var(--grid-size);
+        }
+        .epic-overlay::after {
+            content: ''; position: absolute; inset: 0;
+            background-image: radial-gradient(circle, rgba(255, 75, 75, 0.8) 0%, rgba(255, 75, 75, 0.15) 15%, transparent 35%);
+            background-size: 200% 200%; animation: wanderingGlow 30s ease-in-out infinite;
+            -webkit-mask-image: linear-gradient(black var(--grid-line), transparent var(--grid-line)), linear-gradient(90deg, black var(--grid-line), transparent var(--grid-line));
+            -webkit-mask-size: var(--grid-size);
+        }
+
+        body.epic-mode .epic-overlay { opacity: 1; }
+
+        h2, .btn-menu, #prompt, .add-btn, .section-title { transition: all 1s ease; }
+
+        .btn-menu {
+            position: absolute; top: 20px; left: 4vw; background: rgba(0, 0, 0, 0.8);
+            color: #00ff41; border: 1px solid rgba(0, 255, 65, 0.4); border-radius: 6px; padding: 10px 20px;
+            font-family: inherit; font-weight: bold; font-size: 16px; cursor: pointer;
+            text-decoration: none; text-transform: uppercase; box-shadow: 0 0 10px rgba(0, 255, 65, 0.1);
+            z-index: 1000;
+        }
+        .btn-menu:hover { background: #00ff41; color: #000; box-shadow: 0 0 20px rgba(0, 255, 65, 0.6); transform: scale(1.05); }
+
+        h2 { text-align: center; color: #00ff41; margin: 0 0 15px 0; font-size: 2.2em; text-shadow: 0 0 15px rgba(0, 255, 65, 0.4); }
+
+        .main-layout { display: flex; flex: 1; gap: 25px; min-height: 0; }
+        .game-grid { flex: 3; display: flex; flex-direction: column; gap: 25px; min-height: 0; }
+        .top-panels { display: flex; gap: 25px; flex: 1; min-height: 0; }
+
+        .box, .side-panel, #input-area {
+            border: 1px solid rgba(0, 255, 65, 0.3);
+            border-radius: 8px;
+            background-color: rgba(5, 5, 5, 0.95);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.6), inset 0 0 10px rgba(0, 255, 65, 0.05);
+            background-image: linear-gradient(#ff4b4b, #ff4b4b);
+            background-repeat: no-repeat;
+            background-position: center top;
+            background-size: 0% 2px;
+            transition: background-size 1.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 1.2s, box-shadow 1.2s;
+        }
+
+        .box { padding: 20px; overflow-y: auto; white-space: pre-wrap; word-wrap: break-word; line-height: 1.4; font-size: 17px; }
+
+        #map-wrapper { flex: 0 0 400px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        #map-box { line-height: 1.1; white-space: pre; text-align: center; transition: font-size 0.1s ease-out; }
+        .info-stack { flex: 1; display: flex; flex-direction: column; gap: 25px; min-height: 0; }
+        #room-box, #player-box { flex: 1; }
+
+        /* CORRECTION 2 : cursor: text partout sur la boîte */
+        #input-area { padding: 15px 20px; align-items: center; cursor: text; }
+        #input { background: none; border: none; color: #fff; font-family: inherit; font-size: 19px; outline: none; flex: 1; caret-color: #00ff41; transition: caret-color 1s; }
+
+        .sidebar { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 280px; max-width: 350px; }
+        .side-panel { padding: 15px; display: flex; flex-direction: column; min-height: 0; }
+
+        .saves-panel.dragover { border-color: #fff; background: rgba(0, 255, 65, 0.15); box-shadow: inset 0 0 20px rgba(0, 255, 65, 0.5); }
+        .saves-panel { flex: 2; }
+        .cheats-panel { flex: 1; }
+
+        .section-title { font-size: 0.9em; font-weight: bold; margin-bottom: 10px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+
+        .file-list { flex: 1; overflow-y: auto; border-top: 1px solid rgba(255,255,255,0.1); }
+        .file-item { padding: 10px; border-bottom: 1px solid #222; cursor: pointer; font-size: 0.95em; transition: all 0.2s; }
+        .save-item { color: #00ff41; transition: color 1s; }
+        .save-item:hover { background: rgba(0, 255, 65, 0.1); padding-left: 15px; }
+        .cheat-item { color: #ff4b4b; }
+        .cheat-item:hover { background: rgba(255, 75, 75, 0.1); padding-left: 15px; }
+
+        #cheat-viewer { display: none; position: absolute; bottom: 20px; right: 400px; width: 300px; max-height: 300px; background: #111; border: 1px solid #ff4b4b; border-radius: 8px; padding: 15px; z-index: 100; box-shadow: 0 0 30px rgba(255,0,0,0.3); }
+        #cheat-content { font-size: 14px; color: #ff9999; overflow-y: auto; max-height: 200px; white-space: pre-wrap; }
+        .close-cheat { color: #fff; background: #ff4b4b; border: none; padding: 5px 10px; cursor: pointer; float: right; font-size: 12px; border-radius: 4px; }
+        button.add-btn { background: rgba(0, 255, 65, 0.1); color: #00ff41; border: 1px solid #00ff41; border-radius: 4px; padding: 12px; cursor: pointer; font-weight: bold; width: 100%; font-family: inherit; margin-bottom: 10px; transition: all 0.3s; }
+        button.add-btn:hover { background: #00ff41; color: #000; }
+
+        body.epic-mode .box,
+        body.epic-mode .side-panel,
+        body.epic-mode #input-area {
+            background-size: 100% 2px;
+            border-color: rgba(255, 75, 75, 0.5);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.8), inset 0 0 15px rgba(255, 75, 75, 0.15), 0 0 10px rgba(255, 75, 75, 0.2);
+        }
+
+        body.epic-mode h2 { color: #ff4b4b; text-shadow: 0 0 20px rgba(255, 75, 75, 0.6); }
+        body.epic-mode .btn-menu { color: #ff4b4b; border-color: rgba(255, 75, 75, 0.5); box-shadow: 0 0 10px rgba(255, 75, 75, 0.2); }
+        body.epic-mode .btn-menu:hover { background: #ff4b4b; color: #000; box-shadow: 0 0 20px rgba(255, 75, 75, 0.8); }
+        body.epic-mode #prompt { color: #ff4b4b; text-shadow: 0 0 8px rgba(255, 75, 75, 0.5); }
+        body.epic-mode #input { caret-color: #ff4b4b; }
+        body.epic-mode .add-btn { color: #ff4b4b; border-color: #ff4b4b; background: rgba(255, 75, 75, 0.1); }
+        body.epic-mode .add-btn:hover { background: #ff4b4b; color: #000; box-shadow: 0 0 15px rgba(255, 75, 75, 0.4); }
+        body.epic-mode .save-item { color: #ff9999; }
+        body.epic-mode .save-item:hover { background: rgba(255, 75, 75, 0.15); }
+        body.epic-mode ::-webkit-scrollbar-thumb:hover { background: #ff4b4b; }
+        body.epic-mode .saves-panel.dragover { background: rgba(255, 75, 75, 0.15); box-shadow: inset 0 0 20px rgba(255, 75, 75, 0.5); }
+
+    </style>
+</head>
+<body>
+    <div class="epic-overlay"></div>
+
+    <a href="index.html" class="btn-menu">◀ Menu</a>
+    <h2>🏰 DUNGEON EXPLORER</h2>
+    <div class="main-layout">
+        <div class="game-grid">
+            <div class="top-panels">
+                <div id="map-wrapper" class="box"><div id="map-box"></div></div>
+                <div class="info-stack">
+                    <div id="room-box" class="box"></div>
+                    <div id="player-box" class="box"></div>
+                </div>
+            </div>
+            <div id="input-area" onclick="document.getElementById('input').focus()"><span id="prompt" style="margin-right:15px; font-weight:bold;">></span><input type="text" id="input" placeholder="Entrez une commande..." autofocus autocomplete="off"></div>
+        </div>
+        <div class="sidebar">
+            <div id="savesPanel" class="side-panel saves-panel">
+                <div class="section-title">💾 Sauvegardes</div>
+                <button class="add-btn" onclick="document.getElementById('fileInput').click()">+ IMPORTER</button>
+                <input type="file" id="fileInput" style="display:none" onchange="handleFiles(this.files)" multiple>
+                <div id="fileList" class="file-list"></div>
+            </div>
+            <div class="side-panel cheats-panel">
+                <div class="section-title">⚡ Cheat</div>
+                <div id="cheatList" class="file-list"></div>
+            </div>
+        </div>
+    </div>
+    <div id="cheat-viewer">
+        <button class="close-cheat" onclick="closeCheat()">FERMER</button>
+        <div class="section-title" id="cheat-title">Cheat Info</div>
+        <div id="cheat-content"></div>
+    </div>
+    <script>
+        const mapB = document.getElementById('map-box'), roomB = document.getElementById('room-box'), playerB = document.getElementById('player-box'), inp = document.getElementById('input'), stdinBuffer = [];
+
+        let curB = null;
+        let mapBuffer = "";
+        const knownCheats = new Set();
+        let lastCommand = "";
+
+        const currentLevel = window.location.search.substring(1);
+        if (currentLevel.includes("epic")) {
+            setTimeout(() => {
+                document.body.classList.add("epic-mode");
+            }, 150);
+        }
+
+        function color(t) { return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\[\[R\]\]/g,"<span style='color:#ff4b4b;font-weight:bold'>").replace(/\[\[B\]\]/g,"<span style='color:#3b82f6;font-weight:bold'>").replace(/\[\[C\]\]/g,"<span style='color:#666'>").replace(/\[\[X\]\]/g,"</span>"); }
+
+        function triggerGameOver() {
+            const overlay = document.createElement('div');
+            overlay.style = `
+                position: fixed; inset: 0; background: #000; z-index: 10000;
+                display: flex; flex-direction: column; align-items: center; justify-content: center;
+                color: #ff4b4b; font-family: 'Courier New', monospace; font-weight: bold;
+                animation: fadeIn 0.8s ease-out;
+            `;
+            overlay.innerHTML = `
+                <div style="font-size: 5em; text-shadow: 0 0 30px rgba(255, 75, 75, 0.6);">GAME OVER</div>
+                <div style="font-size: 1.2em; color: #666; margin-top: 20px;">Redirection vers le menu...</div>
+            `;
+            document.body.appendChild(overlay);
+            setTimeout(() => { window.location.href = "index.html"; }, 2000);
+        }
+
+        var Module = {
+            noInitialRun: true,
+            arguments: [currentLevel || "donjon32.txt"],
+
+            onExit: function(status) {
+                if (lastCommand === "quit" || lastCommand === "q") {
+                    window.location.href = "index.html";
+                } else {
+                    triggerGameOver();
+                }
+            },
+
+            print: function(t) {
+                if (t.includes("[[CLR]]")) {
+                    mapB.innerHTML = roomB.innerHTML = playerB.innerHTML = "";
+                    mapBuffer = "";
+                    curB = null;
+                    return;
+                }
+                if (t.includes("[[MAP]]")) { curB = mapB; mapBuffer = ""; return; }
+                if (t.includes("[[ROOM]]")) {
+                    if (mapBuffer) { mapB.innerHTML = color(mapBuffer); mapBuffer = ""; }
+                    curB = roomB;
+                    return;
+                }
+                if (t.includes("[[PLAYER]]")) { curB = playerB; return; }
+
+                if (curB === mapB) {
+                    mapBuffer += t + "\n";
+                } else if (curB) {
+                    curB.innerHTML += color(t) + "\n";
+                }
+            },
+            stdin: () => stdinBuffer.length > 0 ? stdinBuffer.shift() : null,
+            onRuntimeInitialized: () => { if (Module.callMain) Module.callMain(Module.arguments); updateList(); }
+        };
+
+        function autoFitMap() {
+            if (!mapB.textContent) return;
+            const lines = mapB.textContent.trimEnd().split('\n'), rows = lines.length, cols = Math.max(...lines.map(l => l.length));
+            if (rows === 0 || cols === 0) return;
+            const wrapper = document.getElementById('map-wrapper'), style = window.getComputedStyle(wrapper);
+            const padX = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight), padY = parseFloat(style.paddingTop) + parseFloat(style.paddingBottom);
+            const availW = wrapper.clientWidth - padX, availH = wrapper.clientHeight - padY;
+            const sizeByWidth = availW / (cols * 0.6), sizeByHeight = availH / (rows * 1.1);
+            let finalSize = Math.max(12, Math.min(Math.min(sizeByWidth, sizeByHeight), 80));
+            mapB.style.fontSize = Math.floor(finalSize) - 1 + "px";
+        }
+        let resizeTimer; const mapObserver = new MutationObserver(() => { clearTimeout(resizeTimer); resizeTimer = setTimeout(autoFitMap, 15); });
+        mapObserver.observe(mapB, { childList: true, characterData: true, subtree: true });
+        window.addEventListener('resize', autoFitMap);
+
+        window.addEventListener('keydown', (e) => {
+            if (document.activeElement !== inp || inp.value === "") {
+                const m = {"ArrowUp":"n","ArrowDown":"s","ArrowLeft":"w","ArrowRight":"e"};
+                if (m[e.key]) { e.preventDefault(); lastCommand = m[e.key]; send(m[e.key]); }
+            }
+        });
+
+        inp.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const v = inp.value.trim();
+                lastCommand = v.toLowerCase();
+                if (v.startsWith("cheat")) { const f = v.split(" ")[1]; if (f) { knownCheats.add(f); setTimeout(() => { dl(f); updateList(); }, 600); } }
+                else if (v.startsWith("save")) { const f = v.split(" ")[1]; if (f) { setTimeout(() => { dl(f); updateList(); }, 600); } }
+                send(v); inp.value = '';
+            }
+        });
+
+        function send(c) { for (let i = 0; i < c.length; i++) stdinBuffer.push(c.charCodeAt(i)); stdinBuffer.push(10); }
+
+        function handleFiles(files) {
+            if (!files.length) return;
+            for (let i = 0; i < files.length; i++) {
+                const f = files[i];
+                const r = new FileReader();
+                r.onload = () => {
+                    Module.FS.writeFile(f.name, new Uint8Array(r.result));
+                    updateList();
+                };
+                r.readAsArrayBuffer(f);
+            }
+        }
+
+        const savesPanel = document.getElementById('savesPanel');
+        savesPanel.addEventListener('dragover', (e) => { e.preventDefault(); savesPanel.classList.add('dragover'); });
+        savesPanel.addEventListener('dragleave', (e) => { e.preventDefault(); savesPanel.classList.remove('dragover'); });
+        savesPanel.addEventListener('drop', (e) => {
+            e.preventDefault(); savesPanel.classList.remove('dragover');
+            if (e.dataTransfer.files.length) { handleFiles(e.dataTransfer.files); }
+        });
+
+        function updateList() {
+            const lSaves = document.getElementById('fileList'), lCheats = document.getElementById('cheatList');
+            lSaves.innerHTML = ""; lCheats.innerHTML = "";
+            Module.FS.readdir('/').forEach(f => {
+                if (![".","..","dev","proc","tmp","home"].includes(f) && !f.startsWith("donjon")) {
+                    const d = document.createElement('div'); d.className = "file-item";
+                    if (knownCheats.has(f) || f.toLowerCase().includes("cheat")) {
+                        d.classList.add("cheat-item"); d.innerHTML = "⚡ " + f; d.onclick = () => openCheat(f); lCheats.appendChild(d);
+                    } else {
+                        d.classList.add("save-item"); d.innerHTML = "📄 " + f; d.onclick = () => send("load " + f); lSaves.appendChild(d);
+                    }
+                }
+            });
+        }
+        function openCheat(n) {
+            try {
+                const text = new TextDecoder().decode(Module.FS.readFile(n));
+                document.getElementById('cheat-title').innerText = "CONTENT: " + n;
+                document.getElementById('cheat-content').innerText = text;
+                document.getElementById('cheat-viewer').style.display = "block";
+            } catch(e) {}
+        }
+        function closeCheat() { document.getElementById('cheat-viewer').style.display = "none"; }
+        function dl(n) {
+            try {
+                const b = new Blob([Module.FS.readFile(n)], {type:'application/octet-stream'});
+                const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = n; a.click();
+            } catch(e) {}
+        }
+    </script>
+    {{{ SCRIPT }}}
+</body>
+</html>

@@ -1,0 +1,16 @@
+8 8
+.....#..
+@.#..#..
+..#..#..
+.....#..
+...#....
+...##...
+...#....
+........
+DESC 0 1 La salle de depart.
+ITEM 4 6 potion 2
+ITEM 2 6 tresor 1
+ITEM 1 7 cle 1
+ENEMY 1 5 rat 6 2 0
+ENEMY 5 5 goblin 12 4 1
+ENEMY 7 1 boss 16 4 2

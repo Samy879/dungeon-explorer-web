@@ -1,0 +1,47 @@
+25 15
+#########################
+#@......#.......#.......#
+#.......#.......#.......#
+#.......#.......#.......#
+####.#######.#######.####
+#.......#.......#.......#
+#.......................#
+#.......#.......#.......#
+####.#######.#######.####
+#.......#.......#.......#
+#.......#.......#.......#
+#.......#.......#.......#
+####.#######.#######.####
+#.......................#
+#########################
+DESC 1 1 Les Geoles. L'air est moite et poisseux. Votre aventure commence ici.
+ITEM 4 2 dague_rouillee 2
+ENEMY 2 6 rat_mutant 10 3 0
+ENEMY 6 6 rat_mutant 10 3 0
+DESC 4 10 La Salle d'Interrogatoire. Des chaines pendent tristement aux murs.
+ITEM 4 11 cle_fer 1
+ENEMY 2 10 bourreau_gobelin 25 5 1
+DESC 12 13 Le Grand Couloir. Des murmures semblent sortir directement de la pierre.
+ENEMY 8 13 esprit_frappeur 15 4 0
+ENEMY 16 13 esprit_frappeur 15 4 0
+ITEM 1 13 potion_soin 20
+ITEM 23 13 potion_soin 20
+DESC 20 11 Le Mausolee. L'atmosphere est etouffante, la mort rode.
+ENEMY 18 10 chevalier_squelette 30 8 3
+ENEMY 22 10 chevalier_squelette 30 8 3
+DESC 20 6 L'Autel Sacrificiel. Une ancienne relique brille dans l'obscurite.
+ITEM 20 5 cle_du_boss 1
+ITEM 20 7 petite_potion 10
+DESC 20 2 L'Armurerie Secrete. Des armes legendaires reposent ici depuis des siecles.
+ITEM 20 1 hache_lourde 15
+ITEM 18 1 potion_max 50
+ENEMY 22 2 mimic_coffre 40 10 2
+DESC 12 10 L'Antichambre. Deux immenses statues de pierre vous fixent.
+ENEMY 10 10 gargouille 35 6 5
+ENEMY 14 10 gargouille 35 6 5
+DESC 12 6 La Croisee. La tension est palpable... le maitre des lieux est tout proche.
+ITEM 4 5 elixir_de_force 10
+DESC 12 2 LA SALLE DU TRONE NOIR. Le silence avant la tempete.
+ENEMY 12 1 SEIGNEUR_NOIR 150 20 5
+ITEM 11 1 LE_GRAAL_IMMORTEL 999
+ITEM 13 1 TRESOR_ROYAL 500
