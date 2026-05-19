@@ -94,3 +94,79 @@ DESC 12 2 LA SALLE DU TRONE NOIR. Le silence avant la tempete.
 ENEMY 12 1 SEIGNEUR_NOIR 150 20 5
 ITEM 11 1 LE_GRAAL_IMMORTEL 999
 ITEM 13 1 TRESOR_ROYAL 500
+8 8
+..#.....
+@.#.##..
+..#.....
+..##.##.
+........
+.###..#.
+....#...
+..#.....
+DESC 0 1 Point d'infiltration. L'helicoptere vient de repartir dans la nuit.
+DESC 1 1 Une ruelle humide. Des douilles brillent au sol.
+DESC 0 0 Ancien poste radio abandonne. On entend encore des gresillements.
+DESC 1 0 Derriere une caisse, une vieille carte tactique est clouee au mur.
+DESC 3 0 Couloir de service. Une odeur de poudre flotte dans l'air.
+DESC 4 0 Salle de briefing ennemie. Des plans de l'ile sont etales sur une table.
+DESC 5 0 Armurerie secondaire. Les casiers ont ete forces.
+DESC 6 0 Salle des generatrices. Le bruit couvre presque vos pas.
+DESC 7 0 Sortie vers la cour interieure, surveillee par des projecteurs.
+DESC 3 1 Porte blindee a moitie ouverte. Quelqu'un est passe avant vous.
+DESC 6 1 Entrepot de munitions. Chaque mouvement doit rester prudent.
+DESC 7 1 Poste de garde. Une radio ennemie repete un message incomplet.
+DESC 0 2 Couloir sombre. Les murs portent des impacts de balle.
+DESC 1 2 Infirmerie improvisee. Il reste quelques bandages propres.
+DESC 3 2 Salle de repos des mercenaires ennemis. Les lits sont encore chauds.
+DESC 4 2 Bureau du chef de zone. Un coffre est pose dans le coin.
+DESC 5 2 Passage technique. Des tuyaux longent le plafond.
+DESC 6 2 Salle video. Des ecrans montrent plusieurs parties du complexe.
+DESC 7 2 Balcon interieur. On voit la cour en contrebas.
+DESC 0 3 Tunnel de maintenance. Il faut avancer courbe.
+DESC 1 3 Reserve de carburant. L'odeur est presque insupportable.
+DESC 4 3 Escalier metallique. Chaque marche grince.
+DESC 7 3 Nid de tireur. La vue est parfaite sur l'entree.
+DESC 0 4 Grande cour. Des traces de pneus traversent la poussiere.
+DESC 1 4 Hangar des vehicules. Un vieux 4x4 crible d'impacts est gare la.
+DESC 2 4 Atelier mecanique. Des outils sont eparpilles partout.
+DESC 3 4 Salle des explosifs. Des caisses sont marquees DANGER.
+DESC 4 4 Couloir principal. Le combat s'est clairement deplace ici.
+DESC 5 4 Salle des trophes du general. Mauvais gout, grosses armes.
+DESC 6 4 Petit arsenal. Il ne reste que quelques chargeurs.
+DESC 7 4 Porte vers le bunker central.
+DESC 0 5 Egout sec sous le camp. C'est sale mais discret.
+DESC 4 5 Salle de surveillance. Une camera bouge encore lentement.
+DESC 5 5 Reserve medicale. Quelques trousses ont survecu au chaos.
+DESC 7 5 Couloir rouge. Les alarmes clignotent sans son.
+DESC 0 6 Ancienne prison. Des chaines pendent aux murs.
+DESC 1 6 Cellule ouverte. Quelqu'un a laisse un couteau rouille.
+DESC 2 6 Salle d'interrogatoire. La lampe oscille encore.
+DESC 3 6 Passage secret derriere une armoire poussee.
+DESC 5 6 Salle du coffre. Le tresor de la mission est proche.
+DESC 6 6 Centre de commandement. Les cartes indiquent une evacuation urgente.
+DESC 7 6 Derniere ligne de defense avant la sortie.
+DESC 0 7 Quai d'evacuation. L'eau noire frappe les piliers.
+DESC 1 7 Zone de chargement. Des caisses militaires attendent d'etre embarquees.
+DESC 3 7 Hangar final. Le toit est perce par les explosions.
+DESC 4 7 Bureau du general. Son fauteuil est vide, mais son cigare fume encore.
+DESC 5 7 Coffre ouvert. Quelque chose d'important a ete cache ici.
+DESC 6 7 Helipad. Le vent des pales semble encore resonner.
+DESC 7 7 Point d'extraction. Si vous survivez, c'est ici que tout finit.
+
+ITEM 1 2 bandage 2
+ITEM 5 0 munitions 3
+ITEM 3 4 explosif 1
+ITEM 6 4 chargeur 2
+ITEM 5 5 medkit 1
+ITEM 1 6 couteau 1
+ITEM 5 7 tresor 1
+ITEM 4 2 cle 1
+ITEM 0 7 fumigene 2
+
+ENEMY 3 1 Barney 8 3 1
+ENEMY 6 1 Christmas 10 3 1
+ENEMY 7 3 YinYang 9 5 0
+ENEMY 5 4 Gunner 14 4 2
+ENEMY 4 5 Caesar 7 2 0
+ENEMY 6 6 TollRoad 18 5 2
+ENEMY 7 7 Stonebanks 22 6 3
