@@ -326,7 +326,7 @@
             const lSaves = document.getElementById('fileList'), lCheats = document.getElementById('cheatList');
             lSaves.innerHTML = ""; lCheats.innerHTML = "";
             Module.FS.readdir('/').forEach(f => {
-                if (![".","..","dev","proc","tmp","home"].includes(f)) {
+                if (![".","..","dev","proc","tmp","home"].includes(f) && !f.endsWith(".txt")) {
                     const d = document.createElement('div'); d.className = "file-item";
                     if (knownCheats.has(f) || f.toLowerCase().includes("cheat")) {
                         d.classList.add("cheat-item"); d.innerHTML = "⚡ " + f; d.onclick = () => openCheat(f); lCheats.appendChild(d);
