@@ -9,3 +9,7 @@ emcc main.c jeu.c donjon.c salle.c joueur.c inventaire.c ui.c ennemi.c save.c ex
     --preload-file donjon_epic.txt \
     --shell-file shell.html \
     -sEXPORTED_RUNTIME_METHODS=callMain,FS
+
+
+pour tester:
+python -m http.server 8080
