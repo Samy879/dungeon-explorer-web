@@ -329,7 +329,7 @@
                 if (![".","..","dev","proc","tmp","home"].includes(f) && !f.endsWith(".txt")) {
                     const d = document.createElement('div'); d.className = "file-item";
                     if (knownCheats.has(f) || f.toLowerCase().includes("cheat")) {
-                        d.classList.add("cheat-item"); d.innerHTML = "⚡ " + f; d.onclick = () => openCheat(f); lCheats.appendChild(d);
+                        d.classList.add("cheat-item"); d.innerHTML = f; d.onclick = () => openCheat(f); lCheats.appendChild(d);
                     } else {
                         d.classList.add("save-item"); d.innerHTML = "📄 " + f; d.onclick = () => send("load " + f); lSaves.appendChild(d);
                     }
